@@ -1,0 +1,69 @@
+---
+title: "Exploracion de datos"
+author: "DataWitches"
+format: html
+editor: visual
+---
+
+## Análisis Exploratorio 
+
+Importamos las librerias necesarias
+
+```{r}
+library(tidyverse)
+```
+
+Leeremos el archivo luego de nuestro primer análisis y limpieza general
+
+```{r}
+airbnb_df <- read.csv("~/KeepCoding/ProyectoFinal/clean/airbnb-listings_cleaned.csv", # Nombre del archivo o ruta completa del archivo
+         header = TRUE,        # Leer el encabezado (TRUE) o no (FALSE)
+         sep = ";",            # Separador de los valores
+         fill = TRUE,          # Rellenar celdas vacías (TRUE) o no (FALSE)
+         comment.char = "",    # Carácter de los comentarios o cadenas vacías
+         encoding = "unknown", # Codificación del archivo
+         )
+head(airbnb_df)
+```
+
+```{r}
+
+airbnb_df <- airbnb_df[,c('Host.Since', 'Zipcode', 'Property.Type', 'Room.Type','Bathrooms', 'Bedrooms', 'Beds', 'Bed.Type', 'Price', 'Cleaning.Fee', 'Availability.365', 'Review.Scores.Location', 'Cancellation.Policy', 'Accommodates', 'Final_Neighbourhood')]
+
+summary(airbnb_df)
+
+View(airbnb_df %>% 
+  count(Property.Type))
+
+#Para ver cada tabla solo cambiar el contenido de count(), si deseas relacionar varias columnas puedes poner por ejemplop count(Final_Neigboorhood, Zipcode). 
+#Es mejor usar la consola
+
+```
+
+**Resumen Analisis de datos**
+
+**- Zipcodes:** No están del todo normalizados, tenemos todavia 2015, 2804, 20013, 20126, 25008, 27004, 27013 entre nuestras filas. Entre los 3 son 8 columnas con un dato cada una. Yo me los cargaría sin más.
+
+**- Host Since:** Esta bastante completo, va desde 2009 hasta 2017. Hay tres en blanco (yo me los cargaría)
+
+**- Bathrooms:** Van de 0 a 8. El top 5 de datos tienen 1, 2, 1.5, 3 y 2.5 respectivamente. Yo agruparía 1, 1.5, 2, 2.5 y 3 o más para hacer las respuestas mas comprensibles.
+
+**- Bedrooms:** Entre 0 y 10. El top tiene 1, 2, 0, 3, 4... Sugiero agrupar como con los baños.
+
+**- Beds:** Entre 1 y 16. Sugiero agrupar también. Si lo vamos a usar
+
+**- Bed Type:** Esta muy bien la verdad, opinaria que no hay que tocarlo.
+
+**- Price:** 277 registros de precios distintos, entre 9€ y 875€.
+
+**- Cleaning Fee:** Entre 4€ y 500€, Tenemos 5392 N/A. aqui yo calcularia un promedio de cleaning fee y se lo asignaria a esa cantidad de datos. Obviamente tambien tenemos que quitar un poco los outlyers y listo.
+
+**- Availabilty 365:** Yo me reuniria a ver esta tabla y a interpretarla y saber si tiene un valor real para nosotras o no.
+
+**- Review Scores Location:** Pues la tabla de relacion entre score y zipcode nos da que el que tiene mejor puntuacion es el 28004, con aprox 1000 reviews a favor. Hay 2867 N/As de este parametro.
+
+**- Cancellation Policy:** Los datos están bien. no hay n/as.
+
+**- Accomodates:** Entre 1 y 16. El top permite entre 1 y 6. Yo agruparia igual que camas y baños.
+
+**- Final Neigbourhood:** Bastante bien al final, 151 barrios. Embajadores el que más propiedades tiene.
