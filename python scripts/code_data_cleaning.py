@@ -14,8 +14,8 @@ df = df.loc[:, columns_to_keep]
 
 # Normalización del código postal
 replace_values = ['nan', '2015', 'Madrid 28004', '2802\n28012', '28002\n28002', '-', '28', '2805', '2804', '28051\n28051', '2815']
-df['Final_Zipcode'] = df.apply(lambda x: np.nan if x['Zipcode'] in replace_values else x['Zipcode'], axis=1)
-df = df.drop('Zipcode', axis=1)
+for zipcode in replace_values:
+    df['Zipcode'] = df['Zipcode'].replace(zipcode, np.nan)
 
 # Limpio los nombres de los barrios: me quedo con los valores de 'Neighbourhood' excepto en el caso de los nulls que los sustituyo por el valor de 'Neighbourhood Cleansed'
 df['Final_Neighbourhood'] = df.apply(lambda x: x['Neighbourhood Cleansed'] if pd.isnull(x['Neighbourhood']) else x['Neighbourhood'], axis=1)
@@ -58,3 +58,12 @@ df = df.drop(columns='Amenities')
 
 # Guardo el nuevo dataframe en un csv para trabajar a partir de este
 df.to_csv('airbnb-listings_cleaned.csv', sep = ';', index = False)
+
+# Decidimos agrupar ciertos Property Types como 'Others' ya que tienen poco peso solos y no son relevantes
+keep_property = ['Condominium', 'House', 'Apartment', 'Bed & Breakfast', 'Loft', 'Chalet', 'Hostel'] # Con los que vamos a quedarnos
+remove_property = list(set(df['Property Type'].unique().tolist()) - set(keep_property)) # Los que vamos a eliminar
+
+for element in remove_property:
+    df['Property Type'] = df['Property Type'].replace(element, 'Other')
+  
+  
