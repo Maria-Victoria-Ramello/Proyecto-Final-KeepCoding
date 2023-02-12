@@ -2,7 +2,6 @@
 import pandas as pd
 import numpy as np
 import re
-from sqlalchemy import create_engine
 
 # Lectura de los ficheros
 raw_file = '../airbnb-listings.csv'
