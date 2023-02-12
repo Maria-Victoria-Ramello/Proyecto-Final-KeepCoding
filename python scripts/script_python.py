@@ -74,3 +74,7 @@ amenities_to_keep = ['ID', 'Price', 'Self Check-In', 'Smartlock', 'Air condition
 df_amenities = df_amenities[amenities_to_keep]
 
 df = df.drop('Amenities', axis=1) # borro la columna 'Amenities' del df original
+
+# Conversión de los dataframes en csv:
+df.to_csv('airbnbs_csv', index=False)
+df_amenities.to_csv('amenities_csv', index=False)
