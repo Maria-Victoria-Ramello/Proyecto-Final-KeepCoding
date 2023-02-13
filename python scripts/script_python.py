@@ -69,7 +69,7 @@ df['Property Type'] = df['Property Type'].map(lambda value: value if value in va
 
 # A partir de la columna 'Amenities' creo una columna por cada uno de los elementos. Además estas columnas pasan a ser un nuevo df.
 df_amenities = df.Amenities.str.get_dummies(sep=',').astype(bool).join(df['ID'])
-amenities_to_keep = ['ID', 'Price', 'Self Check-In', 'Smartlock', 'Air conditioning', 'Elevator in building', 'Essentials', 'Internet', 'Heating', 'Pets allowed', 'Smoking allowed', 'Pool', 'TV', 'Kitchen', 'Gym']
+amenities_to_keep = ['ID', 'Self Check-In', 'Smartlock', 'Air conditioning', 'Elevator in building', 'Essentials', 'Internet', 'Heating', 'Pets allowed', 'Smoking allowed', 'Pool', 'TV', 'Kitchen', 'Gym']
 df_amenities = df_amenities[amenities_to_keep]
 
 df = df.drop('Amenities', axis=1) # borro la columna 'Amenities' del df original
