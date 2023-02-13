@@ -39,16 +39,16 @@ df = df.replace({'Zipcode': zp_normalization})
 # Convertimos los datos de la columna 'Host Since' en tipo fecha
 df['Host Since'] = pd.to_datetime(df['Host Since'])
 
+# Cambiamos los valores nulos de la columna 'Neighbourhood' por el valor correspondiente de la columna 'Neighbourhood Cleansed', eliminamos esta última
+df['Neighbourhood'] = df['Neighbourhood'].fillna(df['Neighbourhood Cleansed'])
+df = df.drop('Neighbourhood Cleansed', axis = 1)
+
 # Normalizamos las columnas de texto
 str_columns = ['Neighbourhood', 'City', 'State', 'Property Type', 'Room Type', 'Bed Type', 'Cancellation Policy']
 for column in df.columns:
     if column in str_columns:
         column_normalized = list(map(normalize, list(map(no_alfa_num, df[column].astype(str)))))
         df[column] = column_normalized
-
-# Cambiamos los valores nulos de la columna 'Neighbourhood' por el valor correspondiente de la columna 'Neighbourhood Cleansed', eliminamos esta última
-df['Neighbourhood'] = df['Neighbourhood'].fillna(df['Neighbourhood Cleansed'])
-df = df.drop('Neighbourhood Cleansed', axis = 1)
 
 # Creamos una nueva columna con la tasa de ocupación calculada según la fórmula
 reviews = df['Reviews per Month'].fillna(0)
@@ -71,3 +71,4 @@ df_amenities = df_amenities[amenities_to_keep]
 # Guardamos ambos dataframes en dos nuevos ficheros
 df.to_csv('../clean/airbnb-listings_cleaned.csv', sep=';', index=False)
 df_amenities.to_csv('../clean/amenities.csv', sep=';', index=False)
+ 
