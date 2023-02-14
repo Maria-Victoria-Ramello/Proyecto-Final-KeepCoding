@@ -1,0 +1,77 @@
+---
+title: "Exploracion de datos"
+author: "DataWitches"
+format: html
+editor: visual
+---
+
+## Modelo Predictivo - Data Witches
+
+Importamos las librerias necesarias
+
+```{r}
+library(tidyverse)
+```
+
+Leeremos el archivo luego de nuestro primer análisis y limpieza general
+
+```{r}
+df <- read.csv("~/Desktop/Proyecto/clean/airbnb-listings_cleaned.csv",
+                      header = TRUE,    # Leer el encabezado (TRUE) o no (FALSE)
+                      sep = ";",        # Separador de los valores
+                      fill = TRUE,      # Rellenar celdas vacías (TRUE) o no (FALSE)
+                      comment.char = "",    # Carácter de los comentarios o cadenas vacías
+                      encoding = "UTF-8"    # Codificación del archivo
+                     )
+```
+
+Visualizamos los dataframes creados
+
+```{r}
+head(df)
+```
+
+Al final hemos decidido relacionar la cantidad de baños, habitaciones, accomodates y camas con el precio para nuestro modelo.
+
+```{r}
+df_filtered <- filter(df, Price < quantile(df$Price, 0.9, na.rm = TRUE) & Price > quantile(df$Price, 0.1, na.rm = TRUE))
+```
+
+```{r}
+set.seed(123456)
+
+df_filtered <- df_filtered %>% mutate(id = row_number())
+
+df_train <- df_filtered %>% sample_frac(.7) %>% filter(Price > 0)
+
+df_test  <- anti_join(df_filtered, df_train, by = 'id') %>% filter(Price > 0)
+```
+
+```{r}
+# sanity check
+nrow(df_train) + nrow(df_test) == nrow(df_filtered %>% filter(Price > 0))
+```
+
+```{r}
+model<- lm (Price ~ Bedrooms+ Beds + Bathrooms + Accommodates, data = df_train)
+
+predictions <- predict(model, newdata = df_test)
+mse <- mean((df_test$Price - predictions)^2)
+r_squared <- summary(model)$r.squared
+sdr <- sd(resid(model))
+```
+
+## **Observaciones de nuestro modelo:**
+
+-   MSE: 386.97
+
+-   R-cuadrado: 0.3240
+
+-   R-cuadrado ajustado: 0.3237
+
+```{r}
+par(mfrow=c(2,2)) 
+plot(model)
+```
+
+Hemos probado otros modelos, teniendo MSE's de 800, 1600 y distintos R's cuadrados. Este ha sido el mejor que hemos podido generar.
