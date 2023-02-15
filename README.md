@@ -32,4 +32,4 @@ Se encuentra recogido en la carpeta [R](https://github.com/LauraDanielamg/Proyec
 
 4. Realizamos un informe final con todas las conclusiones y puntos destacables del proceso:
 
-Puede ser revisado [aqui]()
+Puede ser revisado [aqui](https://github.com/LauraDanielamg/Proyecto-Final-KeepCoding/blob/main/Informe%20Proyecto%20Final%20Data%20Witches.docx)
