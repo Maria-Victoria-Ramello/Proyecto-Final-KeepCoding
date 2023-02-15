@@ -33,8 +33,12 @@ head(df)
 
 Al final hemos decidido relacionar la cantidad de baños, habitaciones, accomodates y camas con el precio para nuestro modelo.
 
+# Modelo Inicial:
+
 ```{r}
 df_filtered <- filter(df, Price < quantile(df$Price, 0.9, na.rm = TRUE) & Price > quantile(df$Price, 0.1, na.rm = TRUE))
+
+df_filtered <- na.omit(df_filtered)
 ```
 
 ```{r}
@@ -48,7 +52,7 @@ df_test  <- anti_join(df_filtered, df_train, by = 'id') %>% filter(Price > 0)
 ```
 
 ```{r}
-# sanity check
+# Verificamos que todo corresponda
 nrow(df_train) + nrow(df_test) == nrow(df_filtered %>% filter(Price > 0))
 ```
 
@@ -61,17 +65,73 @@ r_squared <- summary(model)$r.squared
 sdr <- sd(resid(model))
 ```
 
-## **Observaciones de nuestro modelo:**
+## **Observaciones de este primer modelo:**
 
--   MSE: 386.97
+-   MSE: 378.44
 
--   R-cuadrado: 0.3240
+-   R-cuadrado: 0.2240
 
--   R-cuadrado ajustado: 0.3237
+-   sdr = 19.68
 
 ```{r}
 par(mfrow=c(2,2)) 
 plot(model)
 ```
 
-Hemos probado otros modelos, teniendo MSE's de 800, 1600 y distintos R's cuadrados. Este ha sido el mejor que hemos podido generar.
+# Segundo Modelo Propuesto
+
+```{r}
+# Crear un subset del data frame con las variables que quieres utilizar
+subset_df <- na.omit(df[,c('Price', 'Bedrooms', 'Bathrooms', 'Square.Feet')])
+
+df_filtered_1 <- filter(subset_df, Price < quantile(df$Price, 0.9, na.rm = TRUE) & Price > quantile(df$Price, 0.1, na.rm = TRUE))
+
+
+```
+
+```{r}
+set.seed(123456)
+
+df_filtered_1 <- df_filtered_1 %>% mutate(id = row_number())
+
+df_train_1 <- df_filtered_1 %>% sample_frac(.7) %>% filter(Price > 0)
+
+df_test_1  <- anti_join(df_filtered_1, df_train_1, by = 'id') %>% filter(Price > 0)
+
+```
+
+```{r}
+# Verificamos que todo corresponda
+nrow(df_train_1) + nrow(df_test_1) == nrow(df_filtered_1 %>% filter(Price > 0))
+```
+
+```{# Entrenar el modelo de regresión lineal}
+model_1 <- lm(Price ~ Bedrooms + Bathrooms + Square.Feet, data = df_train_1)
+
+# Imprimir un resumen del modelo
+predictions <- predict(model_1, newdata = df_test_1)
+mse_1 <- mean((df_test_1$Price - predictions)^2)
+r_squared_1 <- summary(model_1)$r.squared
+sdr_1 <- sd(resid(model_1))
+```
+
+```{r}
+par(mfrow=c(2,2)) 
+plot(model_1)
+```
+
+## **Observaciones del segundo modelo:**
+
+-   MSE: 516.16
+
+-   R-cuadrado: 0.1234
+
+-   sdr = 21.85
+
+# Conclusiones
+
+Decidimos quedarnos con el modelo inicial propuesto al tener un MSE más bajo y un R-Cuadrado más alto.
+
+Estas medidas son utilizadas como referentes para entender que tan bueno es nuestro modelo. Lo ideal sería tener un MSE cercano a 0, pero en relación a los datos del dataset a explorar esto es bastante díficil.
+
+El precio es una variable compleja de predecir pues se encuentra afectado por una multiple cantidad de factores y la calidad de los datos es un factor determinante.
